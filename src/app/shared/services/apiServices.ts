@@ -6,7 +6,6 @@ interface LoginResponse {
     token: string;
 }
 
-
 export const login = async (name: string, password: string): Promise<LoginResponse> => {
     const response = await axios
         .post(`${API_URL}/access/login`, {
@@ -23,5 +22,16 @@ export const getUserAuth = async (): Promise<User> => {
             Authorization: `Bearer ${token}`,
         },
     });
+    return response.data;
+}
+
+export const getEquipmentsPerBranch = async (branch_id: number) => {
+    const token = localStorage.getItem('token');
+    const response = await axios
+        .get(`${API_URL}/branches/${branch_id}/equipments`, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
     return response.data;
 }
