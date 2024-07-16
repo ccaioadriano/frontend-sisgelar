@@ -1,8 +1,6 @@
-// src/components/Auth/Login.js
 import { useState } from "react";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
-
+import { login } from "../../shared/services/apiServices";
 export const Login = () => {
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
@@ -11,18 +9,15 @@ export const Login = () => {
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
-    axios
-      .post("http://localhost:8000/api/access/login", {
-        name: name,
-        password: password,
-      })
-      .then((response) => {
-        localStorage.setItem("token", response.data.token);
-        if (localStorage.getItem("token")) {
-          navigate("/dashboard");
-        }
-      })
-      .catch((responseErro) => setError(responseErro.response?.data.message));
+    try {
+      const response = await login(name, password);
+      localStorage.setItem("token", response.token);
+      if (localStorage.getItem("token")) {
+        navigate("/dashboard");
+      }
+    } catch (error: any) {
+      setError(error.response.data.message);
+    }
   };
 
   return (
