@@ -1,11 +1,16 @@
 import { Link } from "react-router-dom";
 
-export const Navigation = () => {
+interface INavigationProps {
+  branchId: number| undefined;
+}
+export const Navigation = (props: INavigationProps) => {
   return (
     <nav>
       <ul>
         <li>
-          <Link to="/equipamentos">Equipamentos</Link>
+          <Link to={`/filial/${props.branchId}/equipamentos`}>
+            Equipamentos
+          </Link>
         </li>
         <li>
           <Link to="/historico">Histórico de Manutenções</Link>

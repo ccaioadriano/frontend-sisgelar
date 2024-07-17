@@ -7,14 +7,20 @@ export const Routes = createBrowserRouter([
     path: "/",
     element: <Login />,
   },
+
   {
     path: "/dashboard",
     element: <Dashboard />,
   },
 
   {
-    path: "/equipamentos",
-    element: <Equipments />,
+    path: "filial/:branch_id",
+    children: [
+      {
+        path: "equipamentos",
+        element: <Equipments />,
+      },
+    ],
   },
 
   {

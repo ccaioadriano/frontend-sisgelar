@@ -1,21 +1,21 @@
 import { useEffect, useState } from "react";
-import { getUserAuth } from "../../shared/services/apiServices";
+import { getUserAuth } from "../../shared/services/api";
 import { User } from "../../interfaces/User";
 import { Header } from "../../shared/components/Header";
 
 export const Dashboard = () => {
   const [user, setUser] = useState<User | null>(null);
   useEffect(() => {
-    const fetchUser = async () => {
-      const userData = await getUserAuth();
-      setUser(userData);
-    };
-    fetchUser();
+    try {
+      const fetchUser = async () => {
+        const userData = await getUserAuth();
+        setUser(userData);
+      };
+      fetchUser();
+
+      console.log(user);
+    } catch (error) {}
   }, []);
 
-  return (
-    <>
-      <Header user={user} />
-    </>
-  );
+  return <>{user ? <Header user={user} /> : <>usuario indefinido</>}</>;
 };

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { login } from "../../shared/services/apiServices";
+import { login } from "../../shared/services/api";
 export const Login = () => {
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");

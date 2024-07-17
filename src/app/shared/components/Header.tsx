@@ -1,16 +1,23 @@
+import { Branch, User } from "../../interfaces/User";
 import { Navigation } from "./Navigation";
-
-export const Header = ({ user }: any) => {
+interface IUserHeader {
+  user: User;
+}
+export const Header = (props: IUserHeader) => {
   return (
     <header>
       <h1>Dashboard</h1>
       <div>
-        <strong>Usuário:</strong> {user?.name}
+        <strong>Usuário:</strong> {props.user?.name}
       </div>
       <div>
-        <strong>Email:</strong> {user?.email}
+        <strong>Email:</strong> {props.user?.email}
       </div>
-      <Navigation />
+
+      <div>
+        <strong>Nome da Filial:</strong> {props.user?.branch?.name}
+      </div>
+      <Navigation branchId={props.user?.branch?.id} />
     </header>
   );
 };
