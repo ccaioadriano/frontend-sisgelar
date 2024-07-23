@@ -1,4 +1,5 @@
-// src/interfaces/interfaces.ts
+import { Branch } from "./Branch";
+
 export interface User {
     id: number;
     name: string;
@@ -7,7 +8,4 @@ export interface User {
     branch: Branch | null;
 }
 
-export interface Branch {
-    id: number;
-    name: string;
-}
+

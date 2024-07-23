@@ -1,30 +1,20 @@
-import { createBrowserRouter } from "react-router-dom";
-import { Dashboard, Login, NotFound } from "../pages";
-import { Equipments } from "../pages/Equipments/Equipments";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Login from "../pages/Login";
+import Dashboard from "../pages/Dashboard";
+import ProtectedRoute from "./ProtectedRoute";
 
-export const Routes = createBrowserRouter([
-  {
-    path: "/",
-    element: <Login />,
-  },
+export const RouterApp = () => {
+  return (
+    <>
+      <Router>
+        <Routes>
+          <Route path="/" element={<Login />} />
 
-  {
-    path: "/dashboard",
-    element: <Dashboard />,
-  },
-
-  {
-    path: "filial/:branch_id",
-    children: [
-      {
-        path: "equipamentos",
-        element: <Equipments />,
-      },
-    ],
-  },
-
-  {
-    path: "*",
-    element: <NotFound />,
-  },
-]);
+          <Route path="/dashboard" element={<ProtectedRoute />}>
+            <Route path="/dashboard" element={<Dashboard />} />
+          </Route>
+        </Routes>
+      </Router>
+    </>
+  );
+};
