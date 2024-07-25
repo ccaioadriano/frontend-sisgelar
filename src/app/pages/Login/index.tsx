@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -12,15 +12,40 @@ import Container from "@mui/material/Container";
 import { ThemeProvider } from "@mui/material/styles";
 import ThemeLogin from "./ThemeLogin";
 import { AuthContext } from "../../shared/contexts/AuthContext";
+import { Alert, CircularProgress, Snackbar } from "@mui/material";
 
 const Login = () => {
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
-  const { login, loginError, isAuthenticated } = useContext(AuthContext);
+  const [isLoading] = useState<boolean>(false);
+  const [open, setOpen] = useState<boolean>(false);
+  const { login, loginError, isAuthenticated, setLoginError } =
+    useContext(AuthContext);
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     await login(name, password);
   };
+
+  useEffect(() => {
+    if (loginError) {
+      setOpen(true);
+    }
+  }, [loginError]);
+
+  if (isLoading) {
+    return (
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          height: "100vh",
+        }}
+      >
+        <CircularProgress />
+      </Box>
+    );
+  }
 
   if (isAuthenticated) {
     return <Navigate to="dashboard" />;
@@ -42,9 +67,26 @@ const Login = () => {
             SISGELAR
           </Typography>
           {loginError && (
-            <Typography color="error" variant="body2" textAlign={"justify"}>
-              {loginError}
-            </Typography>
+            <Snackbar
+              open={open}
+              autoHideDuration={4000}
+              onClose={() => {
+                setOpen(false);
+                setLoginError("");
+              }}
+            >
+              <Alert
+                onClose={() => {
+                  setOpen(false);
+                  setLoginError("");
+                }}
+                severity="error"
+                variant="filled"
+                sx={{ width: "100%" }}
+              >
+                {loginError}
+              </Alert>
+            </Snackbar>
           )}
           <Box
             component="form"

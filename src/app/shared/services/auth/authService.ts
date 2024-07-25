@@ -1,10 +1,10 @@
 
-import axios from "../BaseService";
+import { AxiosError } from "axios";
+import axios from "../baseService";
 import { ILoginResponse } from "../interfaces/ILoginResponse";
 const API_URL = "http://127.0.0.1:8000/api/v1";
 
-export const login = async (name: string, password: string): Promise<ILoginResponse | Error> => {
-
+export const login = async (name: string, password: string): Promise<ILoginResponse | AxiosError> => {
     try {
         const response = await axios
             .post(`${API_URL}/login`, {
@@ -13,7 +13,6 @@ export const login = async (name: string, password: string): Promise<ILoginRespo
             });
         return response.data;
     } catch (error) {
-        return new Error((error as { message: 'Credenciais inválidas.' }).message);
+        return error as AxiosError;
     }
-
 }

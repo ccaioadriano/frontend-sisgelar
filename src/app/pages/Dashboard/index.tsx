@@ -1,32 +1,31 @@
-import { useContext, useState } from "react";
+import CloseIcon from "@mui/icons-material/Close";
+import ExitToAppIcon from "@mui/icons-material/ExitToApp";
+import MenuIcon from "@mui/icons-material/Menu";
 import {
   AppBar,
-  Toolbar,
-  IconButton,
-  Typography,
+  Box,
+  Button,
   CssBaseline,
   Drawer,
-  List,
-  ListItemIcon,
-  ListItemText,
-  Box,
-  ListItemButton,
+  IconButton,
+  Toolbar,
+  Typography,
+  useMediaQuery,
 } from "@mui/material";
-import MenuIcon from "@mui/icons-material/Menu";
-import HomeIcon from "@mui/icons-material/Home";
-import AccountCircleIcon from "@mui/icons-material/AccountCircle";
-import ExitToAppIcon from "@mui/icons-material/ExitToApp";
-import { AuthContext } from "../../shared/contexts/AuthContext";
+import { useContext, useState } from "react";
 import { Navigate } from "react-router-dom";
+import { AuthContext } from "../../shared/contexts/AuthContext";
+import { SideBarList } from "./components/SideBarList";
 
 const drawerWidth = 240;
 
 const Dashboard = () => {
-  const [open, setOpen] = useState(false);
-  const { logout, isAuthenticated, user } = useContext(AuthContext);
+  const [isOpen, setOpen] = useState(false);
+  const { logout, isAuthenticated, userAuth } = useContext(AuthContext);
+  const isMobile = useMediaQuery((theme: any) => theme.breakpoints.down("sm"));
 
   const handleDrawerToggle = () => {
-    setOpen(!open);
+    setOpen(!isOpen);
   };
 
   if (!isAuthenticated) {
@@ -41,95 +40,82 @@ const Dashboard = () => {
         sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}
       >
         <Toolbar>
-          <IconButton
-            color="inherit"
-            aria-label="open drawer"
-            edge="start"
-            onClick={handleDrawerToggle}
-            sx={{ marginRight: 2 }}
-          >
-            <MenuIcon />
-          </IconButton>
-          <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
+          {isMobile && (
+            <IconButton
+              color="inherit"
+              edge="start"
+              onClick={handleDrawerToggle}
+              sx={{ marginRight: 2 }}
+            >
+              {isOpen ? <CloseIcon /> : <MenuIcon />}
+            </IconButton>
+          )}
+          <Typography variant="h6" sx={{ flexGrow: 1 }}>
             Dashboard
           </Typography>
+          {!isMobile && userAuth && (
+            <Box sx={{ display: "flex", alignItems: "center" }}>
+              <Typography variant="subtitle1" sx={{ mr: 2 }}>
+                Olá, {userAuth.name}
+              </Typography>
+              <Button color="inherit" onClick={logout}>
+                <ExitToAppIcon />
+              </Button>
+            </Box>
+          )}
+          {isMobile && (
+            <Button color="inherit" onClick={logout}>
+              <ExitToAppIcon />
+            </Button>
+          )}
         </Toolbar>
       </AppBar>
-      <Drawer
-        variant="temporary"
-        open={open}
-        onClose={handleDrawerToggle}
-        ModalProps={{
-          keepMounted: true,
-        }}
-        sx={{
-          display: { xs: "block", sm: "none" },
-          "& .MuiDrawer-paper": { boxSizing: "border-box", width: drawerWidth },
-        }}
+      <Box
+        component="nav"
+        sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
       >
-        <List>
-          <ListItemButton>
-            <ListItemIcon>
-              <HomeIcon />
-            </ListItemIcon>
-            <ListItemText primary="Home" />
-          </ListItemButton>
-          <ListItemButton>
-            <ListItemIcon>
-              <AccountCircleIcon />
-            </ListItemIcon>
-            <ListItemText primary="Profile" />
-          </ListItemButton>
-          <ListItemButton onClick={logout}>
-            <ListItemIcon>
-              <ExitToAppIcon />
-            </ListItemIcon>
-            <ListItemText primary="Logout" />
-          </ListItemButton>
-        </List>
-      </Drawer>
-      <Drawer
-        variant="permanent"
-        sx={{
-          display: { xs: "none", sm: "block" },
-          "& .MuiDrawer-paper": { boxSizing: "border-box", width: drawerWidth },
-        }}
-        open
-      >
-        <List>
-          <ListItemButton>
-            <ListItemIcon>
-              <HomeIcon />
-            </ListItemIcon>
-            <ListItemText primary="Home" />
-          </ListItemButton>
-          <ListItemButton>
-            <ListItemIcon>
-              <AccountCircleIcon />
-            </ListItemIcon>
-            <ListItemText primary="Profile" />
-          </ListItemButton>
-          <ListItemButton onClick={logout}>
-            <ListItemIcon>
-              <ExitToAppIcon />
-            </ListItemIcon>
-            <ListItemText primary="Logout" />
-          </ListItemButton>
-        </List>
-      </Drawer>
+        <Drawer
+          variant={isMobile ? "temporary" : "permanent"}
+          open={isOpen}
+          onClose={handleDrawerToggle}
+          sx={{
+            display: { xs: "block", sm: "none" },
+            "& .MuiDrawer-paper": {
+              boxSizing: "border-box",
+              width: drawerWidth,
+            },
+          }}
+          ModalProps={{
+            keepMounted: true,
+          }}
+        >
+          <SideBarList />
+        </Drawer>
+        <Drawer
+          variant="permanent"
+          sx={{
+            display: { xs: "none", sm: "block" },
+            "& .MuiDrawer-paper": {
+              boxSizing: "border-box",
+              width: drawerWidth,
+            },
+          }}
+          open
+        >
+          <SideBarList />
+        </Drawer>
+      </Box>
       <Box
         component="main"
         sx={{
-          flexGrow: 1,
           bgcolor: "background.default",
           p: 3,
-          ml: { sm: `${drawerWidth}px` },
         }}
       >
         <Toolbar />
         <Typography paragraph>
-          Bem-vindo ao dashboard, {user?.name}! Aqui você pode adicionar seus
-          componentes principais.
+          Bem-vindo ao dashboard, {userAuth?.name}! Aqui você pode adicionar
+          seus componentes principais.
         </Typography>
       </Box>
     </Box>

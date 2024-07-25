@@ -5,15 +5,17 @@ import {
   useEffect,
   useCallback,
 } from "react";
-import { login as loginService } from "../services/auth/AuthService";
+import { login as loginService } from "../services/auth/authService";
 import { IUserLogin } from "../services/interfaces/IUserLogin";
+import { AxiosError } from "axios";
 
 interface AuthContextProps {
-  user: IUserLogin | undefined;
+  userAuth: IUserLogin | undefined;
   login: (name: string, password: string) => Promise<string | void>;
   logout: () => void;
   loginError: string | undefined;
   isAuthenticated: boolean;
+  setLoginError: (param: string) => void;
 }
 
 export const AuthContext = createContext<AuthContextProps>(
@@ -22,12 +24,12 @@ export const AuthContext = createContext<AuthContextProps>(
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [loginError, setLoginError] = useState<string>();
-  const [user, setUser] = useState<IUserLogin>();
+  const [userAuth, setUser] = useState<IUserLogin>();
   useEffect(() => {
     const loadingStoreData = () => {
       const storageUser = localStorage.getItem("user");
       const storageToken = localStorage.getItem("token");
-      
+
       if (storageUser && storageToken) {
         const parsedUser: IUserLogin = JSON.parse(storageUser);
         setUser(parsedUser);
@@ -39,9 +41,33 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const handleLogin = useCallback(
     async (name: string, password: string): Promise<string | void> => {
       const res = await loginService(name, password);
-
-      if (res instanceof Error) {
-        setLoginError("Credenciais inválidas.");
+      if (res instanceof AxiosError) {
+        switch (res.response?.status) {
+          case 404:
+            console.log(
+              "Tentativa de login falhou. Verifique a rota da requisição."
+            );
+            setLoginError(
+              "Tentativa de login falhou. Verifique a rota da requisição."
+            );
+            break;
+          case 500:
+            console.log(
+              "Tentativa de login falhou. Verifique com o administrador do sistema."
+            );
+            setLoginError(
+              "Tentativa de login falhou. Verifique com o administrador do sistema."
+            );
+            break;
+          case 401:
+            console.log(
+              "Tentativa de login falhou. Verifique as credenciais e tente novamente."
+            );
+            setLoginError(
+              "Credenciais inválidas. Verifique e tente novamente."
+            );
+            break;
+        }
       } else {
         localStorage.setItem("token", res.access_token);
         localStorage.setItem("user", JSON.stringify(res.user));
@@ -60,11 +86,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   return (
     <AuthContext.Provider
       value={{
-        user,
+        userAuth,
         login: handleLogin,
         logout: handleLogout,
-        isAuthenticated: !!user,
+        isAuthenticated: !!userAuth,
         loginError,
+        setLoginError(param: string) {
+          setLoginError(param);
+        },
       }}
     >
       {children}

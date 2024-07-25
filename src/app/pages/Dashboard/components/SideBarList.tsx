@@ -1,16 +1,13 @@
-// src/components/Sidebar.tsx
-
 import {
   Box,
-  List,
-  ListItem,
-  ListItemText,
   Divider,
+  List,
   ListItemButton,
+  ListItemText,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 
-const Sidebar = () => {
+export const SideBarList = () => {
   const navigate = useNavigate();
 
   return (
@@ -23,12 +20,9 @@ const Sidebar = () => {
         flexDirection: "column",
       }}
     >
-      <List>
-        <ListItemButton onClick={() => navigate("/dashboard")}>
-          <ListItemText primary="Dashboard" />
-        </ListItemButton>
+      <List sx={{ width: "100%", position: "absolute", top: "7%" }}>
         <ListItemButton onClick={() => navigate("/profile")}>
-          <ListItemText primary="Profile" />
+          <ListItemText primary="Equipamentos" />
         </ListItemButton>
         <ListItemButton onClick={() => navigate("/settings")}>
           <ListItemText primary="Settings" />
@@ -38,5 +32,3 @@ const Sidebar = () => {
     </Box>
   );
 };
-
-export default Sidebar;
